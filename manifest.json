@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "AI Extension",
+  "version": "1.0.0",
+  "description": "A basic AI extension that runs locally",
+  "permissions": ["scripting", "activeTab", "tabs", "storage"],
+  "background": {
+    "service_worker": "./assets/service-worker.js",
+    "type": "module"
+  },
+  "host_permissions": ["https://*/*"],
+  "action": {
+    "default_popup": "./src/components/popup/popup.html",
+    "default_title": "AI Extension"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';",
+    "sandbox": "sandbox allow-scripts allow-forms allow-popups allow-modals; script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["./assets/content.js"]
+    }
+  ]
+}

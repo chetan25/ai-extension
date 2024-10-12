@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.popup-wrapper {
+  min-height: 12rem;
+  width: 26rem;
+}
