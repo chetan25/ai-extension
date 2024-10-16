@@ -3,20 +3,19 @@ const getInnerText = () => {
 };
 
 export async function getInnerHTMLFromPage() {
-  await chrome.tabs.query(
-    { active: true, currentWindow: true },
-    async function (tabs) {
-      console.log({ tabs });
-      let tabId = tabs[0].id;
-      const result = await chrome.scripting.executeScript({
-        target: { tabId },
-        func: getInnerText,
-        // args: [answer],
-      });
+  let queryOptions = { active: true };
+  // `tab` will either be a `tabs.Tab` instance or `undefined`.
+  let [tab] = await chrome.tabs.query(queryOptions);
+  console.log({ tab });
+  let tabId = tab.id;
+  const result = await chrome.scripting.executeScript({
+    target: { tabId },
+    func: getInnerText,
+    // args: [answer],
+  });
 
-      const context = result[0].result;
-      return context;
-      console.log({ context });
-    }
-  );
+  const context = result[0].result;
+  console.log({ context });
+
+  return context;
 }

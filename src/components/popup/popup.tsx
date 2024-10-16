@@ -2,8 +2,6 @@
 import { FC, useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 
-// import Spinner from "../spinner/spinner";
-
 import "./popup.css";
 import Accordian from "./accordian/Accordian";
 import Models from "../models/Models";
@@ -26,10 +24,6 @@ const App: FC<{}> = () => {
     //   alert(
     //     `Hello from WEB WORKER ${event.data.status} -- ${event.data.output[0].label}`
     //   );
-    // };
-
-    // const onMessageReceived = (e) => {
-    //   // TODO: Will fill in later
     // };
 
     // // Attach the callback function as an event listener.
@@ -56,16 +50,16 @@ const App: FC<{}> = () => {
   //   });
   // };
 
-  // const handleWebWorker = () => {
-  //   worker.current!.postMessage({ text: "I am Sad" });
+  const handleWebWorker = () => {
+    worker.current!.postMessage({ text: "I am Sad" });
 
-  //   worker.current!.onmessage = function (event) {
-  //     console.log("Recieved from Web worker", event.data.output);
-  //     alert(
-  //       `Hello WEB WORKER ${event.data.status} -- ${event.data.output[0].label}`
-  //     );
-  //   };
-  // };
+    worker.current!.onmessage = function (event) {
+      console.log("Recieved from Web worker", event.data.output);
+      alert(
+        `Hello WEB WORKER ${event.data.status} -- ${event.data.output[0].label}`
+      );
+    };
+  };
 
   return (
     <div className="popup-wrapper">

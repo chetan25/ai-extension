@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, MouseEvent } from "react";
 import { getStoredModels, LocalStorage } from "../../utils/storage";
+import Spinner from "../spinner/spinner";
 
 const Toast = ({ message }: { message: string }) => {
   return (
@@ -59,20 +60,41 @@ const Action = () => {
 
   const askQuestion = async (e: MouseEvent<HTMLElement>) => {
     e.preventDefault();
+    setLloading(true);
     chrome.runtime.sendMessage(
       {
         type: "predict",
         task: "question-answering",
         query: questionRef.current!.value,
       },
-      (response: { label: string }[]) => {
+      (response: { answer: string }) => {
         setLloading(false);
-        console.log(`Result: ${response[0]}`);
-        // setResults({
-        //   analyze: ,
-        //   summarize: "",
-        //   question: "",
-        // });
+        console.log(response);
+        setResults({
+          analyze: "",
+          summarize: "",
+          question: response.answer,
+        });
+      }
+    );
+  };
+
+  const summarize = async (e: MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    setLloading(true);
+    chrome.runtime.sendMessage(
+      {
+        type: "predict",
+        task: "summarization",
+      },
+      (response: { summary_text: string }) => {
+        setLloading(false);
+        console.log(response);
+        setResults({
+          analyze: "",
+          summarize: response.summary_text,
+          question: "",
+        });
       }
     );
   };
@@ -122,7 +144,7 @@ const Action = () => {
                   type="button"
                   onClick={analyzeSentiment}
                   disabled={loadding}
-                  className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800  disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none"
                 >
                   Analyze Sentiment
                 </button>
@@ -139,7 +161,7 @@ const Action = () => {
                 <input
                   type="text"
                   id="question-answering"
-                  className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
                   placeholder="Paste in your question"
                   required
                   ref={questionRef}
@@ -148,7 +170,7 @@ const Action = () => {
                   type="submit"
                   disabled={loadding}
                   onClick={askQuestion}
-                  className="text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  className="text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800  disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none"
                 >
                   Ask Questions
                 </button>
@@ -165,7 +187,8 @@ const Action = () => {
                 <button
                   type="submit"
                   disabled={loadding}
-                  className="text-white w-full bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  onClick={summarize}
+                  className="text-white w-full bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800  disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none"
                 >
                   Summarize Current Page
                 </button>
@@ -175,6 +198,7 @@ const Action = () => {
           );
         }
       })}
+      <div>{loadding ? <Spinner /> : null}</div>
     </div>
   );
 };
